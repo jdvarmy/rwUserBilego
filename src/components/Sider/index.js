@@ -4,10 +4,10 @@ import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import { Layout, Menu } from 'antd';
 import {
-  DesktopOutlined,
-  FileOutlined,
+  // DesktopOutlined,
+  // FileOutlined,
   PieChartOutlined,
-  TeamOutlined,
+  // TeamOutlined,
   UserOutlined
 } from '@ant-design/icons';
 
