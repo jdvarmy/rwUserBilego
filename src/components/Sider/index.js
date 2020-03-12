@@ -4,11 +4,8 @@ import { observer } from 'mobx-react';
 import styled from 'styled-components';
 import { Layout, Menu } from 'antd';
 import {
-  // DesktopOutlined,
-  // FileOutlined,
-  PieChartOutlined,
-  // TeamOutlined,
-  UserOutlined
+  RiseOutlined,
+  PieChartOutlined
 } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
@@ -33,22 +30,13 @@ class Sider extends React.Component{
         <Logo/>
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
           <Menu.Item key="1">
-            <PieChartOutlined/>
-            <span>Option 1</span>
+            <RiseOutlined/>
+            <span>Events</span>
           </Menu.Item>
-          <SubMenu
-            key="sub1"
-            title={
-              <span>
-                  <UserOutlined/>
-                  <span>User</span>
-                </span>
-            }
-          >
-            <Menu.Item key="3">Tom</Menu.Item>
-            <Menu.Item key="4">Bill</Menu.Item>
-            <Menu.Item key="5">Alex</Menu.Item>
-          </SubMenu>
+          <Menu.Item key="2">
+            <PieChartOutlined/>
+            <span>Users</span>
+          </Menu.Item>
         </Menu>
       </Layout.Sider>
     )

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import BilegoUi from './BilegoUi';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<BilegoUi />, document.getElementById('root'));
