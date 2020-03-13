@@ -6,6 +6,7 @@ import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import { Layout } from 'antd';
 
 import * as stores from './stores';
+import routes from './routes';
 import {
   EventsPage,
   LoginPage
@@ -61,28 +62,21 @@ class BilegoUi extends React.Component {
 @inject('securityStore')
 @observer
 class BilegoUiRouter extends React.Component {
-  selectStartPage = (user) => {
-    if (!user || !user.roles) {
-      return '/login';
-    } else {
-      return '/';
-    }
-  };
-
   render() {
-    const { securityStore: { permissions, user} } = this.props;
+    const { securityStore: {user} } = this.props;
+    const routs = routes(user);
 
     return (
       <Wrapper>
-        <Sider />
+        {user && <Sider />}
         <Layout className="site-layout">
           <Header />
           <Content>
-            <BrowserRouter basename={`/${user}`}>
+            <BrowserRouter>
               <Switch>
-                <Route path="/login" exact component={LoginPage} />
-                <Route from="/events" exact component={EventsPage} />
-                <Route from="/" exact component={EventsPage} />
+                {routs.map(props => (
+                  <Route {...props} />
+                ))}
               </Switch>
             </BrowserRouter>
           </Content>
