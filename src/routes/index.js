@@ -7,7 +7,7 @@ import {
 
 
 export default function (baseRouter) {
-  return baseRouter ? (
+  return(
     [
       {
         path: `/login`,
@@ -47,21 +47,7 @@ export default function (baseRouter) {
         path: `*`,
         key: 'page404All',
         component: Page404,
-      }
-    ]
-  ) : (
-    [
-      {
-        path: `/login`,
-        key: 'login',
-        component: LoginPage,
-        exact: true,
       },
-      {
-        path: `*`,
-        key: 'page404All',
-        component: Page404,
-      }
     ]
   )
 }
