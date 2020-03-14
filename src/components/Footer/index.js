@@ -10,6 +10,6 @@ function GetYear(){
 
 export default function Footer(){
   return (
-    <Layout.Footer style={{ textAlign: 'center' }}>Bilego ©<GetYear /> Created by JDV</Layout.Footer>
+    <Layout.Footer style={{ textAlign: 'right', position: 'fixed', width: '100%', bottom: 0, right: '16px' }}>Bilego event admin ©<GetYear /> Created by JDV</Layout.Footer>
   )
 }

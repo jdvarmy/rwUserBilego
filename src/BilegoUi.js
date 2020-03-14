@@ -13,14 +13,10 @@ import Footer from './components/Footer';
 import Sider from './components/Sider';
 import Header from './components/Header';
 
-import 'antd/es/layout/style/css';
-import 'antd/es/menu/style/css';
+// import 'antd/es/layout/style/css';
 
 const Wrapper = styled(Layout)`
   min-height: 100vh;
-`;
-const Content = styled(Layout.Content)`
-  margin: 0 16px;
 `;
 
 const
@@ -78,8 +74,8 @@ class BilegoUiRouter extends React.Component {
       <Wrapper>
         {user && <Sider />}
         <Layout className="site-layout">
-          <Header />
-          <Content>
+          {user && <Header />}
+          <Layout.Content>
             <Router history={history} path={path}>
               <Switch>
                 {routs.map(props => (
@@ -87,7 +83,7 @@ class BilegoUiRouter extends React.Component {
                 ))}
               </Switch>
             </Router>
-          </Content>
+          </Layout.Content>
           <Footer />
         </Layout>
       </Wrapper>
