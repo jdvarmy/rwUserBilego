@@ -4,10 +4,12 @@ import { observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, LoadingOutlined, RightCircleOutlined } from '@ant-design/icons';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
+
+import theme from '../../theme';
 
 import image from './img/image.jpg';
 
@@ -16,6 +18,12 @@ const Wrapper = styled.div`
   height: 100%;
   .section-image{
     background-image: url(${image});
+  }
+  .btn.btn-primary.btn-block{
+    svg{
+      vertical-align: baseline;
+      margin-right: ${theme.sizes.base};
+    }
   }
 `;
 
@@ -27,6 +35,9 @@ class Login extends React.Component{
   @observable pass = '';
   @observable message = null;
 
+  @observable invalidEmail = false;
+  @observable invalidPass = false;
+
   @action
   handleChange = (event) => {
     this[event.target.name] = event.target.value;
@@ -36,17 +47,30 @@ class Login extends React.Component{
     this.message = message
   };
 
-  handleSubmit = (e) => {
+  @action
+  handleSubmit = async (e) => {
     e.preventDefault();
+    const { securityStore, history } = this.props;
 
-    // валидация полей формы
+    this.email === '' ? this.invalidEmail = true : this.invalidEmail = false;
+    this.pass === '' ? this.invalidPass = true : this.invalidPass = false;
+    if(this.email === '' || this.pass === ''){
+      return false;
+    }
+
     // посылаем на сервер -> получаем ответ
-    // ошибка? handleErrors
-    // нет ошибки
+    if (!securityStore.updatingUser) {
+      try {
+        await securityStore.login(this.email, this.pass);
+        history.push(`/${securityStore.user.nicename}`);
+      } catch (error) {
+        this.handleErrors(error, {email: this.email, password: this.pass});
+      }
+    }
   };
 
   handleErrors = (error, values) => {
-    const message = error.message || "Проверьте правильность ввода Имени пользователя и Пароля";
+    const message = error.message || "Проверьте правильность ввода Email и Пароля";
 
     this.setMessage(message);
   };
@@ -75,7 +99,14 @@ class Login extends React.Component{
                                 <UserOutlined />
                               </InputGroup.Text>
                             </InputGroup.Prepend>
-                            <Form.Control name="email" type="email" placeholder="Введите email" onChange={this.handleChange} value={this.email} />
+                            <Form.Control
+                              name="email"
+                              type="email"
+                              placeholder="Введите email"
+                              onChange={this.handleChange}
+                              value={this.email}
+                              isInvalid={this.invalidEmail}
+                            />
                           </InputGroup>
                         </Form.Group>
                         <Form.Group controlId="formBasicPassword">
@@ -85,10 +116,18 @@ class Login extends React.Component{
                                 <LockOutlined />
                               </InputGroup.Text>
                             </InputGroup.Prepend>
-                            <Form.Control name="pass" type="password" placeholder="Пароль" onChange={this.handleChange} value={this.pass} />
+                            <Form.Control
+                              name="pass"
+                              type="password"
+                              placeholder="Пароль"
+                              onChange={this.handleChange}
+                              value={this.pass}
+                              isInvalid={this.invalidPass}
+                            />
                           </InputGroup>
                         </Form.Group>
                         <Button variant="primary" block type="submit" onClick={this.handleSubmit}>
+                          {updatingUser ? <LoadingOutlined /> : <RightCircleOutlined />}
                           Войти
                         </Button>
                       </Form>

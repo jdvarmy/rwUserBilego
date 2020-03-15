@@ -13,32 +13,13 @@ import Footer from './components/Footer';
 import Sider from './components/Sider';
 import Header from './components/Header';
 
+import theme from './theme';
+
 // import 'antd/es/layout/style/css';
 
 const Wrapper = styled(Layout)`
   min-height: 100vh;
 `;
-
-const
-  baseSize = 8,
-  borderRadius = 2,
-  borderWidth = 1,
-  theme = {
-    colors: {
-      main: '#375362',
-      electricBlue: '#E4E9EE',
-    },
-    sizes: {
-      borderRadius: `${borderRadius}px`,
-      base: `${baseSize}px`,
-      xs: `${baseSize / 2}px`,
-      md: `${baseSize * 2}px`,
-      lg: `${baseSize * 3}px`,
-      xl: `${baseSize * 4}px`,
-      xxl: `${baseSize * 5}px`,
-      borderWidth: `${borderWidth}px`,
-    },
-  };
 
 class BilegoUi extends React.Component {
   render() {
@@ -59,16 +40,16 @@ const path = window.location.pathname;
 @observer
 class BilegoUiRouter extends React.Component {
   render() {
-    const { securityStore: {user} } = this.props;
-    const routs = routes(user);
+    const { securityStore: {user, token} } = this.props;
+    const routs = routes(user.nicename);
 
-    !user
+    !user || !token
       ? history.push(`/login`)
       : history.location.pathname.indexOf('/login') + 1
-        ? history.push(`/${user}`)
-        : history.location.pathname.indexOf(`/${user}`) + 1
+        ? history.push(`/${user.nicename}`)
+        : history.location.pathname.indexOf(`/${user.nicename}`) + 1
           ? history.push(path)
-          : history.push(`/${user}`);
+          : history.push(`/${user.nicename}`);
 
     return (
       <Wrapper>

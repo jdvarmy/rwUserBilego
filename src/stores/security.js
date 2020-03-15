@@ -18,11 +18,12 @@ class Security{
   @observable updatingUser = false;
 
   @action
-  login = flow(function* login(username, password) {
+  login = flow(function* login(email, password) {
     try {
       yield tokenService.clear();
       this.updatingUser = true;
-      const {token, userDetail} = yield securityService.login(username, password);
+      const {token, user_email, user_nicename, user_display_name} = yield securityService.login(email, password),
+        userDetail = {email: user_email, nicename: user_nicename, displayname: user_display_name};
       this.token = token;
       this.user = userDetail;
       tokenService.set(token);
