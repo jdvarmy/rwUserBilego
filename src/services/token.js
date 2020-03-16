@@ -1,5 +1,5 @@
 import storage from './helpers/storage';
-const key = 'token';
+const key = '_bilego_token';
 
 export default {
   set: storage.set.bind(null, key),

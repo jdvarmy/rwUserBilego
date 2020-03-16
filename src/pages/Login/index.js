@@ -8,6 +8,7 @@ import { UserOutlined, LockOutlined, LoadingOutlined, RightCircleOutlined } from
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
+import Spinner from 'react-bootstrap/Spinner';
 
 import theme from '../../theme';
 
@@ -128,6 +129,13 @@ class Login extends React.Component{
                         </Form.Group>
                         <Button variant="primary" block type="submit" onClick={this.handleSubmit}>
                           {updatingUser ? <LoadingOutlined /> : <RightCircleOutlined />}
+                          <Spinner
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
                           Войти
                         </Button>
                       </Form>

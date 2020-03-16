@@ -1,12 +1,16 @@
 import React from 'react';
 import { action, observable } from 'mobx';
-import { observer } from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 import styled from 'styled-components';
 import { Layout, Menu } from 'antd';
 import {
   RiseOutlined,
   PieChartOutlined
 } from '@ant-design/icons';
+
+
+import 'antd/es/layout/style/css';
+import 'antd/es/menu/style/css';
 
 const { SubMenu } = Menu;
 
@@ -16,6 +20,7 @@ const Logo = styled.div`
   margin: 16px;
 `;
 
+@inject('pageStore')
 @observer
 class Sider extends React.Component{
   @observable collapsed = true;

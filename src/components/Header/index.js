@@ -1,13 +1,22 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Layout } from 'antd';
 
-const Content = styled(Layout.Header)`
-  background-color: white;
+import Navbar from 'react-bootstrap/Navbar'
+import Nav from 'react-bootstrap/Nav'
+
+const Content = styled(Navbar)`
+  background: #001529;
+  color: #fff;
+  height: 68px;
 `;
 
 export default function Header(){
   return (
-    <Content />
+    <Content>
+      <Nav className="mr-auto" />
+      <div inline>
+        <div>User</div>
+      </div>
+    </Content>
   );
 }

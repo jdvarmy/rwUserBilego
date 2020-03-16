@@ -15,8 +15,6 @@ import Header from './components/Header';
 
 import theme from './theme';
 
-// import 'antd/es/layout/style/css';
-
 const Wrapper = styled(Layout)`
   min-height: 100vh;
 `;
@@ -41,7 +39,7 @@ const path = window.location.pathname;
 class BilegoUiRouter extends React.Component {
   render() {
     const { securityStore: {user, token} } = this.props;
-    const routs = routes(user.nicename);
+    const routs = routes(user && user.nicename ? user.nicename : '');
 
     !user || !token
       ? history.push(`/login`)
@@ -51,11 +49,13 @@ class BilegoUiRouter extends React.Component {
           ? history.push(path)
           : history.push(`/${user.nicename}`);
 
+    console.log(token)
+    console.log(user)
     return (
       <Wrapper>
-        {user && <Sider />}
+        {(user && token) && <Sider />}
         <Layout className="site-layout">
-          {user && <Header />}
+          {(user && token) && <Header />}
           <Layout.Content>
             <Router history={history} path={path}>
               <Switch>
