@@ -11,14 +11,14 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Spinner from 'react-bootstrap/Spinner';
 
 import theme from '../../theme';
-
 import image from './img/image.jpg';
 
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-  .section-image{
+  .bg-img-holder.section-image{
     background-image: url(${image});
+    z-index: 1;
   }
   .btn.btn-primary.btn-block{
     svg{
@@ -59,7 +59,6 @@ class Login extends React.Component{
       return false;
     }
 
-    // посылаем на сервер -> получаем ответ
     if (!securityStore.updatingUser) {
       try {
         await securityStore.login(this.email, this.pass);
@@ -129,13 +128,6 @@ class Login extends React.Component{
                         </Form.Group>
                         <Button variant="primary" block type="submit" onClick={this.handleSubmit}>
                           {updatingUser ? <LoadingOutlined /> : <RightCircleOutlined />}
-                          <Spinner
-                            as="span"
-                            animation="border"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                          />
                           Войти
                         </Button>
                       </Form>
