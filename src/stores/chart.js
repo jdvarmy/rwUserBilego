@@ -1,5 +1,5 @@
 import { configure, observable, action, flow } from 'mobx';
-import { chartService } from '../services';
+import { userService } from '../services';
 
 configure({
   enforceActions: 'always'
@@ -7,19 +7,30 @@ configure({
 
 class Chart{
   @observable isLoading = false;
-  @observable dataTicketsToMonth = null;
 
   @action
   clear = () => {
-    this.dataTicketsToMonth = null;
+
   };
 
   @action
-  getTicketsToMonth = flow( function* getTicketsToMonth(params){
+  getEventsOfUser = flow( function* getEventsOfUser(token, params = {}){
     this.isLoading = true;
     try{
-      const response = yield chartService.getTicketsToMonth(params);
-      this.dataTicketsToMonth = response;
+      const response = yield userService.getEventsOfUser(token, params);
+      console.log(response)
+    }catch(e){
+      console.log(e);
+    }finally {
+      this.isLoading = false;
+    }
+  }).bind(this);
+  @action
+  getOrders = flow( function* getOrders(token, params = {}){
+    this.isLoading = true;
+    try{
+      const response = yield userService.getOrders(token, params);
+      console.log(response)
     }catch(e){
       console.log(e);
     }finally {

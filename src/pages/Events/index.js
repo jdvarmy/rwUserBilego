@@ -7,38 +7,37 @@ import {
 
 // /chart/ticketsToMonth
 
-@inject('chartStore')
+@inject('chartStore', 'securityStore')
 @observer
 class Events extends React.PureComponent{
   componentDidMount() {
-    const { chartStore: {getTicketsToMonth} } = this.props;
-    getTicketsToMonth();
+    const { chartStore: {getEventsOfUser, getOrders}, securityStore: {token} } = this.props;
+
+    getEventsOfUser(token);
+    // getOrders(token);
   }
 
   render() {
-    const { chartStore: {dataTicketsToMonth} } = this.props;
-
     // todo создать массив с цветами для блоков. подобрать красивые и правильные цвета
 
     return (
       <div className="site-layout-background bilego" style={{padding: 24}}>
-        {dataTicketsToMonth
-          ? <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={dataTicketsToMonth.data}
-                      margin={{top: 20, right: 30, left: 20, bottom: 5}}>
-              {/*<CartesianGrid strokeDasharray="3 3"/>*/}
-              <XAxis dataKey="name"/>
-              <YAxis/>
-              <Tooltip/>
-              <Legend/>
-              {dataTicketsToMonth.concerts.map((el, k)=>{
-                console.log(dataTicketsToMonth.concerts)
-                return <Bar dataKey={el} key={k} stackId="a" fill={'#' + (Math.random().toString(16) + '000000').substring(2,8).toUpperCase()}/>
-              })}
-            </BarChart>
-          </ResponsiveContainer>
-          : 'loading'
-        }
+        {/*{dataTicketsToMonth*/}
+        {/*  ? <ResponsiveContainer width="100%" height={300}>*/}
+        {/*    <BarChart data={dataTicketsToMonth.data}*/}
+        {/*              margin={{top: 20, right: 30, left: 20, bottom: 5}}>*/}
+        {/*      /!*<CartesianGrid strokeDasharray="3 3"/>*!/*/}
+        {/*      <XAxis dataKey="name"/>*/}
+        {/*      <YAxis/>*/}
+        {/*      <Tooltip/>*/}
+        {/*      <Legend/>*/}
+        {/*      {dataTicketsToMonth.concerts.map((el, k)=>{*/}
+        {/*        return <Bar dataKey={el} key={k} stackId="a" fill={'#' + (Math.random().toString(16) + '000000').substring(2,8).toUpperCase()}/>*/}
+        {/*      })}*/}
+        {/*    </BarChart>*/}
+        {/*  </ResponsiveContainer>*/}
+        {/*  : 'loading'*/}
+        {/*}*/}
       </div>
     )
   }

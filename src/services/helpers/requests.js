@@ -1,5 +1,6 @@
 import _superagent from 'superagent';
 import superagentPromise from 'superagent-promise';
+import tokenService from '../token';
 
 const http = superagentPromise(_superagent, global.Promise);
 
@@ -15,9 +16,11 @@ const handleCatch = (url, err) => {
 const responseBody = res => res.body || res.text;
 
 const tokenPlugin = request => {
-  // todo: включить на проме, блокирует запросы с разных адресов
+  const token = tokenService.get();
+  request.set('Authorization', `Bearer ${token}`);
   // request.set('X-Requested-With', 'XMLHttpRequest');
   // request.set('X-NX-Origin', 'SG');
+
 };
 
 export default {
