@@ -1,43 +1,105 @@
 import React from 'react';
-import {inject, observer} from 'mobx-react';
+import { inject, observer } from 'mobx-react';
+import styled from 'styled-components';
 
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+import { Table, Tooltip, Input } from 'antd';
+import { Concert } from '../../components/Table';
+import { OrderDetails } from '../../components/Table/Order';
+import { SolutionOutlined } from '@ant-design/icons';
 
-// /chart/ticketsToMonth
+import css from '../../theme';
+import 'antd/es/table/style/css';
+import 'antd/es/tooltip/style/css';
+import 'antd/es/input/style/css';
 
-@inject('chartStore', 'securityStore')
+const Orders = styled.div`
+  margin: ${css.sizes.xs} 0;
+  vertical-align: middle;
+  text-align: center;
+`;
+
+@inject('userStore', 'securityStore')
 @observer
 class Events extends React.PureComponent{
   componentDidMount() {
-    const { chartStore: {getEventsOfUser, getOrders}, securityStore: {token} } = this.props;
+    const { userStore:{ getEventsOfUser, initState } } = this.props;
 
-    getEventsOfUser(token);
-    // getOrders(token);
-  }
+    initState();
+    getEventsOfUser();
+  };
 
   render() {
     // todo создать массив с цветами для блоков. подобрать красивые и правильные цвета
 
+    const { userStore:{ filters, events } } = this.props;
+
+    const columns = [
+      {
+        title: 'Концерт',
+        dataIndex: 'concert',
+        key: 'concert',
+        filterLine: (
+          <Tooltip trigger={['hover','click']} placement="topLeft" type="footnote" title="Поиск событий" >
+            <div>
+              <Input.Search onPressEnter={this.onSearch} placeholder={'Поиск'} />
+            </div>
+          </Tooltip>
+        ),
+        render: concert => <Concert concert={concert} />
+      },
+      {
+        title: 'Дата концерта',
+        dataIndex: 'date',
+        key: 'date',
+        filterLine: (
+          <Tooltip trigger={['hover','click']} placement="topLeft" type="footnote" title="Дата" >
+            <div>
+              <Input.Search onPressEnter={this.onSearch} placeholder={'Поиск'} />
+            </div>
+          </Tooltip>
+        ),
+        render: date => date
+      },
+      {
+        title: 'Продано билетов',
+        dataIndex: 'totalQuantity',
+        key: 'totalQuantity',
+        width: 154,
+        render: totalCur => totalCur
+      },
+      {
+        title: 'На сумму',
+        dataIndex: 'totalCur',
+        key: 'totalCur',
+        width: 124,
+        render: totalQuantity => totalQuantity
+      },
+      {
+        title: 'Отчеты',
+        key: 'orders',
+        width: 1,
+        render: () => <Orders onClick={() => {}}><SolutionOutlined /></Orders>
+      }
+    ];
+
     return (
-      <div className="site-layout-background bilego" style={{padding: 24}}>
-        {/*{dataTicketsToMonth*/}
-        {/*  ? <ResponsiveContainer width="100%" height={300}>*/}
-        {/*    <BarChart data={dataTicketsToMonth.data}*/}
-        {/*              margin={{top: 20, right: 30, left: 20, bottom: 5}}>*/}
-        {/*      /!*<CartesianGrid strokeDasharray="3 3"/>*!/*/}
-        {/*      <XAxis dataKey="name"/>*/}
-        {/*      <YAxis/>*/}
-        {/*      <Tooltip/>*/}
-        {/*      <Legend/>*/}
-        {/*      {dataTicketsToMonth.concerts.map((el, k)=>{*/}
-        {/*        return <Bar dataKey={el} key={k} stackId="a" fill={'#' + (Math.random().toString(16) + '000000').substring(2,8).toUpperCase()}/>*/}
-        {/*      })}*/}
-        {/*    </BarChart>*/}
-        {/*  </ResponsiveContainer>*/}
-        {/*  : 'loading'*/}
-        {/*}*/}
+      <div className="site-layout-background bilego">
+        <Table
+          columns={columns}
+          dataSource={events}
+          // onChange={this.tableChange}
+          expandRowByClick={false}
+          expandable={{
+            expandedRowRender: orders => <OrderDetails orders={orders.ordersInfo}/>,
+          }}
+          // pagination={{
+          //   defaultPageSize: 20,
+          //   pageSizeOptions: ['20', '50', '100'],
+          //   showSizeChanger: true,
+          //   total: pagination.total,
+          //   current: pagination.current
+          // }}
+        />
       </div>
     )
   }

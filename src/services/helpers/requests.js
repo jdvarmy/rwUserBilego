@@ -10,14 +10,23 @@ const handleErrors = error => {
 };
 
 const handleCatch = (url, err) => {
-  console.log(url, err)
+  console.log(url, err);
+
+  if(err.status >= 400 && err.status < 500) {
+    // tokenService.clear();
+    // if(!(url === '/authenticate')) {
+    //   window.location.href = '/login';
+      console.log('!!!!!!!!!session expired!!!!!!!!!!');
+    // }
+  }
 };
 
 const responseBody = res => res.body || res.text;
 
 const tokenPlugin = request => {
   const token = tokenService.get();
-  request.set('Authorization', `Bearer ${token}`);
+  if(token)
+    request.set('Authorization', `Bearer ${token}`);
   // request.set('X-Requested-With', 'XMLHttpRequest');
   // request.set('X-NX-Origin', 'SG');
 

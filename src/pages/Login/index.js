@@ -8,7 +8,6 @@ import { UserOutlined, LockOutlined, LoadingOutlined, RightCircleOutlined } from
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
-import Spinner from 'react-bootstrap/Spinner';
 
 import theme from '../../theme';
 import image from './img/image.jpg';

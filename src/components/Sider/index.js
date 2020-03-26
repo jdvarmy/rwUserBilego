@@ -38,10 +38,6 @@ class Sider extends React.Component{
             <RiseOutlined/>
             <span>Events</span>
           </Menu.Item>
-          <Menu.Item key="2">
-            <PieChartOutlined/>
-            <span>Users</span>
-          </Menu.Item>
         </Menu>
       </Layout.Sider>
     )

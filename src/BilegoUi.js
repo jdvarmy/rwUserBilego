@@ -49,8 +49,6 @@ class BilegoUiRouter extends React.Component {
           ? history.push(path)
           : history.push(`/${user.nicename}`);
 
-    console.log(token)
-    console.log(user)
     return (
       <Wrapper>
         {(user && token) && <Sider />}

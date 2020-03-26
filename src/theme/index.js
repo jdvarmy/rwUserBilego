@@ -6,7 +6,8 @@ const
 export default {
     colors: {
       main: '#375362',
-      electricBlue: '#E4E9EE',
+      electricBlue: '#e4e9ee',
+      'glassDarkCoral': 'rgba(211, 76, 76, 0.1)',
     },
     sizes: {
       borderRadius: `${borderRadius}px`,
