@@ -2,6 +2,7 @@ import {
   LoginPage,
   EventsPage,
   EventPage,
+  OrdersPage,
   Page404
 } from '../pages';
 
@@ -25,6 +26,18 @@ export default function (baseRouter) {
         path: `/${baseRouter}`,
         key: 'frontUser',
         component: EventsPage,
+        exact: true,
+      },
+      {
+        path: `/${baseRouter}/events`,
+        key: 'EventsPage',
+        component: EventsPage,
+        exact: true,
+      },
+      {
+        path: `/${baseRouter}/orders`,
+        key: 'OrdersPage',
+        component: OrdersPage,
         exact: true,
       },
       {

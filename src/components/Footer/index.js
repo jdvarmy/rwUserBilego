@@ -10,9 +10,9 @@ const CustomFooter = styled(Layout.Footer)`
   right: 2px;
   &.ant-layout-footer {
     padding: 0;
-    color: rgba(0, 0, 0, 0.65);
-    font-size: 14px;
-    background: #f0f2f5;
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 12px;
+    background: none;
   }
 `;
 
@@ -25,6 +25,6 @@ function GetYear(){
 
 export default function Footer(){
   return (
-    <CustomFooter>Bilego event admin ©<GetYear /> Created by JDV</CustomFooter>
+    <CustomFooter>Bilego event admin ©<GetYear /> created by jdv</CustomFooter>
   )
 }

@@ -8,7 +8,7 @@ import css from '../../../theme';
 import 'antd/es/table/style/css';
 import 'antd/es/badge/style/css';
 
-const { Paragraph } = Typography;
+const { Paragraph, Text } = Typography;
 const Dot = style.span`
   ::before{
     content: "•";
@@ -19,6 +19,11 @@ const Dot = style.span`
 
 @observer
 class OrderDetails extends React.Component{
+
+  round = value => {
+    return Number(Math.round(value + 'e' + 2) + 'e-' + 2);
+  };
+
   render() {
     const { orders } = this.props;
 
@@ -54,8 +59,16 @@ class OrderDetails extends React.Component{
         render: (text, record) => {
           return (
             <Paragraph>
-              <Badge status="success" />
-              Finished
+              <Badge status={
+                text === 'Выполнен'
+                  ? 'success'
+                  : text === 'Отменен'
+                    ? 'error'
+                    : text === 'В ожидании оплаты'
+                      ? 'processing'
+                      : 'default'
+              } />
+              {text}
             </Paragraph>
           )
         },
@@ -67,7 +80,7 @@ class OrderDetails extends React.Component{
         render: text => {
           return (
             <Paragraph>
-              {text}
+              {text}p
             </Paragraph>
           )
         },
@@ -94,9 +107,9 @@ class OrderDetails extends React.Component{
         dataIndex: 'tickets',
         key: 'tickets',
         render: data => {
-          return data.map(el=>(
-              <Paragraph>
-                {el.name}<Dot/>{el.quantity}<Dot/>{el.total}
+          return data.map((el, k)=>(
+              <Paragraph key={k}>
+                {el.name}<Dot/>x{el.quantity}<Dot/>{el.price}p
               </Paragraph>
             ))
         },
@@ -122,12 +135,54 @@ class OrderDetails extends React.Component{
     });
 
     return (
-      <Table
+      data.length > 0
+      ? <Table
         columns={columns}
         dataSource={data}
         expandRowByClick={false}
         pagination={false}
+        summary={data => {
+          let money = 0,
+            tickets = 0,
+            complitedMoney = 0,
+            complitedTickets = 0;
+
+          data.map(el => {
+            const sum = parseFloat(el.totalCur), count = el.totalQuantity;
+
+            if(el.status === 'Выполнен'){
+              complitedMoney = this.round(sum + complitedMoney);
+              complitedTickets += count;
+            }
+            money = this.round(sum + money);
+            tickets += count;
+          });
+
+          return (
+            <>
+              <tr>
+                <th colSpan={2}>Выполненые заказы</th>
+                <th colSpan={2}>
+                  <Text type="danger">{complitedMoney}p</Text>
+                </th>
+                <th colSpan={2}>
+                  <Text>x{complitedTickets}</Text>
+                </th>
+              </tr>
+              <tr>
+                <th colSpan={2}>Всего</th>
+                <th colSpan={2}>
+                  <Text type="danger">{money}p</Text>
+                </th>
+                <th colSpan={2}>
+                  <Text>x{tickets}</Text>
+                </th>
+              </tr>
+            </>
+          );
+        }}
       />
+      : null
     )
   }
 }

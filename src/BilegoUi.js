@@ -51,20 +51,20 @@ class BilegoUiRouter extends React.Component {
 
     return (
       <Wrapper>
-        {(user && token) && <Sider />}
-        <Layout className="site-layout">
-          {(user && token) && <Header />}
-          <Layout.Content>
-            <Router history={history} path={path}>
-              <Switch>
-                {routs.map(props => (
-                  <Route {...props} />
-                ))}
-              </Switch>
-            </Router>
-          </Layout.Content>
-          <Footer />
-        </Layout>
+        <Router history={history} path={path}>
+          {(user && token) && <Sider />}
+          <Layout className="site-layout">
+            {(user && token) && <Header />}
+            <Layout.Content>
+                <Switch>
+                  {routs.map(props => (
+                    <Route {...props} />
+                  ))}
+                </Switch>
+            </Layout.Content>
+            <Footer />
+          </Layout>
+        </Router>
       </Wrapper>
     );
   }

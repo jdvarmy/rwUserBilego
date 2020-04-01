@@ -1,4 +1,4 @@
-import { configure, observable, action, flow } from 'mobx';
+import { configure, observable, action, flow, computed } from 'mobx';
 import { errorsStore } from './';
 import {
   securityService,
@@ -16,6 +16,11 @@ class Security{
   @observable user = userService.get() || null;
 
   @observable updatingUser = false;
+
+  @computed
+  get baseNameForRouting(){
+    return this.user && this.user.nicename ? this.user.nicename : '';
+  };
 
   @action
   login = flow(function* login(email, password) {

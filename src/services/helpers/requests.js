@@ -10,14 +10,12 @@ const handleErrors = error => {
 };
 
 const handleCatch = (url, err) => {
-  console.log(url, err);
-
   if(err.status >= 400 && err.status < 500) {
-    // tokenService.clear();
-    // if(!(url === '/authenticate')) {
-    //   window.location.href = '/login';
+    tokenService.clear();
+    if(! url.indexOf('/login')+1) {
+      window.location.href = '/login';
       console.log('!!!!!!!!!session expired!!!!!!!!!!');
-    // }
+    }
   }
 };
 

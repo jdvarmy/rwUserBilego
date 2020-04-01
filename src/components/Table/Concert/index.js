@@ -4,12 +4,7 @@ import styled from 'styled-components';
 
 import css from '../../../theme';
 
-const MedalIcon = styled.svg`
-  width: ${css.sizes.lg};
-  height: 100%;
-  margin: auto 0;
-`;
-const Student = styled.div`
+const Event = styled.div`
   display: flex;
   justify-content: space-between;
   min-height: ${css.sizes.xl};
@@ -17,13 +12,13 @@ const Student = styled.div`
 `;
 
 @withRouter
-class StudentList extends React.Component {
+class Concert extends React.Component {
   render() {
     const {concert} = this.props;
-    return <Student>
+    return <Event>
       {concert}
-    </Student>;
+    </Event>;
   }
 }
 
-export default StudentList;
+export default Concert;

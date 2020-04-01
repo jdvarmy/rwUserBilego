@@ -1,4 +1,5 @@
 import React from 'react';
+import { inject, observer } from 'mobx-react';
 import styled from 'styled-components';
 
 import Navbar from 'react-bootstrap/Navbar'
@@ -10,13 +11,20 @@ const Content = styled(Navbar)`
   height: 68px;
 `;
 
-export default function Header(){
-  return (
-    <Content>
-      <Nav className="mr-auto" />
-      <div inline>
-        <div>User</div>
-      </div>
-    </Content>
-  );
+@inject('securityStore')
+@observer
+class Header extends React.Component{
+  render() {
+    const { securityStore: { user } } = this.props;
+    return (
+      <Content>
+        <Nav className="mr-auto"/>
+        <div inline>
+          <div>{user.displayname}</div>
+        </div>
+      </Content>
+    )
+  }
 }
+
+export default Header;
