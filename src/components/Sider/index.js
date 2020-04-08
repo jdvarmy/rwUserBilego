@@ -10,8 +10,6 @@ import {
   RiseOutlined,
   PieChartOutlined
 } from '@ant-design/icons';
-import Icon from '@ant-design/icons';
-// import { TicketSvg } from '../../theme/icons';
 
 import 'antd/es/layout/style/css';
 import 'antd/es/menu/style/css';
@@ -21,8 +19,6 @@ const Logo = styled.div`
   background: rgba(255, 255, 255, 0.2);
   margin: ${css.sizes.md};
 `;
-
-// const PandaIcon = props => <Icon component={TicketSvg} {...props} style={{ fontSize: css.sizes.md }} />;
 
 @withRouter
 @inject('pageStore', 'securityStore')

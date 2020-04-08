@@ -7,6 +7,7 @@ export default {
     colors: {
       main: '#375362',
       grey: 'rgba(0, 0, 0, 0.5)',
+      yellow: '#ffc069',
       electricBlue: '#e4e9ee',
       electricRed: 'rgb(246, 37, 90)',
       glassDarkCoral: 'rgba(211, 76, 76, 0.1)',

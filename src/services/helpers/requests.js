@@ -11,6 +11,7 @@ const handleErrors = error => {
 
 const handleCatch = (url, err) => {
   if(err.status >= 400 && err.status < 500) {
+    console.log('!!!!!!!!!session error!!!!!!!!!!');
     tokenService.clear();
     if(! url.indexOf('/login')+1) {
       window.location.href = '/login';

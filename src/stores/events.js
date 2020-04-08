@@ -20,6 +20,34 @@ class Events{
     all: false,
   };
 
+  cache = {};
+  searchCache = {
+    remove: (resource) => {
+      delete this.cache[resource];
+    },
+    exist: (resource) => {
+      return this.cache.hasOwnProperty(resource) && this.cache[resource] !== null;
+    },
+    get: (resource) => {
+      return this.cache[resource];
+    },
+    set: (resource, cachedData) => {
+      this.searchCache.remove(resource);
+      this.cache[resource] = cachedData;
+    },
+  };
+  getKey = () => {
+    const { events, startDate, endDate, all } = this.filters;
+    let key = '';
+
+    all ? key = 'true' : key = 'false';
+    events !== undefined ? key += events.toString() : key += '';
+    startDate !== undefined ? key += startDate.format('DDMMYYYY') : key += '';
+    endDate !== undefined ? key += endDate.format('DDMMYYYY') : key += '';
+
+    return key;
+  };
+
   @action
   setFilter = (filters) => {
     this.filters = { ...this.filters, ...filters };
@@ -29,12 +57,13 @@ class Events{
   @action
   clearFilters = () => {
     this.filters = {
-      events: undefined, // не используется. данные фильтруются без запроса в БД
+      events: undefined,
       startDate: undefined,
       endDate: undefined,
       all: false,
     };
-    this.fetchEvents();
+    this.cache = {};
+    this.getEventsOfUser();
   };
 
   @action
@@ -48,28 +77,34 @@ class Events{
   getEventsOfUser = flow(function* getEventsOfUser() {
     this.isLoading = true;
     try {
-      const response = yield eventsService.getEventsOfUser(
-        {
-          page: this.pagination.current,
-          size: this.pagination.pageSize,
-          sortField: this.sortOrder.columnKey,
-          direction: this.sortOrder.order
-            ? this.sortOrder.order === 'descend'
-              ? 'desc'
-              : 'asc'
-            : null,
-        },
-        {
-          events: this.filters.events,
-          startDate: this.filters.startDate
-            ? this.filters.startDate.format('DD-MM-YYYY')
-            : undefined,
-          endDate: this.filters.endDate
-            ? this.filters.endDate.format('DD-MM-YYYY')
-            : undefined,
-          all: this.filters.all,
-        }
-      );
+      let response;
+      const key = this.getKey();
+      if(this.searchCache.exist(key)) {
+        response = this.searchCache.get(key);
+      }else {
+        const {events, startDate, endDate, all} = this.filters;
+        response = yield eventsService.getEventsOfUser(
+          {
+            page: this.pagination.current,
+            size: this.pagination.pageSize,
+            sortField: this.sortOrder.columnKey,
+            direction: this.sortOrder.order
+              ? this.sortOrder.order === 'descend'
+                ? 'desc'
+                : 'asc'
+              : null,
+          },
+          {
+            events: events,
+            startDate: startDate ? startDate.format('DD-MM-YYYY') : undefined,
+            endDate: endDate ? endDate.format('DD-MM-YYYY') : undefined,
+            all: all,
+          }
+        );
+        this.searchCache.set(key, response)
+      }
+
+      console.log(response)
 
       this.events = response.map(event => {
         return {

@@ -8,19 +8,49 @@ configure({
 class Orders{
   @observable isLoading = false;
   @observable orders = false;
-  @observable tickets = false;
 
   @observable sortOrder = {columnKey: 'id', order: 'ascend'};
   @observable pagination = {current: 1, pageSize: 20, total: 1};
 
   @observable filters = {
-    ordersId: undefined,
+    orderId: undefined,
     startDate: undefined,
     endDate: undefined,
     status: undefined,
-    buyer: undefined,
+    customer: undefined,
     event: undefined,
     all: false,
+  };
+
+  cache = {};
+  searchCache = {
+    remove: (resource) => {
+      delete this.cache[resource];
+    },
+    exist: (resource) => {
+      return this.cache.hasOwnProperty(resource) && this.cache[resource] !== null;
+    },
+    get: (resource) => {
+      return this.cache[resource];
+    },
+    set: (resource, cachedData) => {
+      this.searchCache.remove(resource);
+      this.cache[resource] = cachedData;
+    },
+  };
+  getKey = () => {
+    const { orderId, startDate, endDate, status, customer, event, all } = this.filters;
+    let key = '';
+
+    all ? key = 'true' : key = 'false';
+    orderId !== undefined ? key += orderId.toString() : key += '';
+    startDate !== undefined ? key += startDate.format('DDMMYYYY') : key += '';
+    endDate !== undefined ? key += endDate.format('DDMMYYYY') : key += '';
+    status !== undefined ? key += status.join() : key += '';
+    customer !== undefined ? key += customer.toString() : key += '';
+    event !== undefined ? key += event.toString() : key += '';
+
+    return key;
   };
 
   @action
@@ -32,14 +62,15 @@ class Orders{
   @action
   clearFilters = () => {
     this.filters = {
-      ordersId: undefined,
+      orderId: undefined,
       startDate: undefined,
       endDate: undefined,
       status: undefined,
-      buyer: undefined,
+      customer: undefined,
       event: undefined,
       all: false,
     };
+    this.cache = {};
     this.getOrders();
   };
 
@@ -47,38 +78,43 @@ class Orders{
   initState = () => {
     this.isLoading = false;
     this.orders = [];
-    this.tickets = [];
   };
 
   @action
   getOrders = flow(function* getOrders() {
     this.isLoading = true;
     try {
-      const response = yield ordersService.getOrders(
-        {
-          page: this.pagination.current,
-          size: this.pagination.pageSize,
-          sortField: this.sortOrder.columnKey,
-          direction: this.sortOrder.order
-            ? this.sortOrder.order === 'descend'
-              ? 'desc'
-              : 'asc'
-            : null,
-        },
-        {
-          ordersId: this.filters.ordersId,
-          startDate: this.filters.startDate
-            ? this.filters.startDate.format('DD-MM-YYYY')
-            : undefined,
-          endDate: this.filters.endDate
-            ? this.filters.endDate.format('DD-MM-YYYY')
-            : undefined,
-          status: this.filters.status,
-          buyer: this.filters.buyer,
-          event: this.filters.event,
-          all: this.filters.all,
-        }
-      );
+      let response;
+      const key = this.getKey();
+      if(this.searchCache.exist(key)) {
+        response = this.searchCache.get(key);
+      }else {
+        const {orderId, startDate, endDate, status, customer, event, all} = this.filters;
+        response = yield ordersService.getOrders(
+          {
+            page: this.pagination.current,
+            size: this.pagination.pageSize,
+            sortField: this.sortOrder.columnKey,
+            direction: this.sortOrder.order
+              ? this.sortOrder.order === 'descend'
+                ? 'desc'
+                : 'asc'
+              : null,
+          },
+          {
+            orderId: orderId,
+            startDate: startDate ? startDate.format('DD-MM-YYYY') : undefined,
+            endDate: endDate ? endDate.format('DD-MM-YYYY') : undefined,
+            status: status ? status.join(',') : undefined,
+            customer: customer,
+            event: event,
+            all: all,
+          }
+        );
+        this.searchCache.set(key, response)
+      }
+
+      console.log(response)
 
       this.orders = Object.keys(response).map(order => {
         let ticket = [];
@@ -103,15 +139,19 @@ class Orders{
           status: response[order].status,
           totalCur: response[order].total_cur,
           totalQuantity: response[order].total_quantity,
-          customer: response[order].billing_address.email,
+          customer:{
+            email: response[order].billing_address.email,
+            ip: response[order].customer_ip,
+            userAgent: response[order].customer_user_agent,
+          },
           event: response[order].event.title,
-          ticket: ticket
+          tickets: ticket
         }
       });
-      console.log(this.orders)
 
     } catch (e) {
       // return errorHandleStore.handleError('load learnings error. ' + e);
+      console.log('orders error: ', e)
     } finally {
       this.isLoading = false;
     }
