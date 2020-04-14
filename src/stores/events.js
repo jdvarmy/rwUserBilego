@@ -8,7 +8,7 @@ configure({
 class Events{
   @observable isLoading = false;
   @observable events = false;
-  @observable orders = false;
+  @observable response = false;
 
   @observable sortOrder = {columnKey: 'id', order: 'ascend'};
   @observable pagination = {current: 1, pageSize: 20, total: 1};
@@ -69,7 +69,7 @@ class Events{
   @action
   initState = () => {
     this.events = [];
-    this.orders = [];
+    this.response = [];
     this.isLoading = false;
   };
 
@@ -104,8 +104,7 @@ class Events{
         this.searchCache.set(key, response)
       }
 
-      console.log(response)
-
+      this.response = response;
       this.events = response.map(event => {
         return {
           key: event.id,

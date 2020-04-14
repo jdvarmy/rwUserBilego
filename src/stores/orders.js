@@ -8,6 +8,7 @@ configure({
 class Orders{
   @observable isLoading = false;
   @observable orders = false;
+  @observable response = false;
 
   @observable sortOrder = {columnKey: 'id', order: 'ascend'};
   @observable pagination = {current: 1, pageSize: 20, total: 1};
@@ -78,6 +79,7 @@ class Orders{
   initState = () => {
     this.isLoading = false;
     this.orders = [];
+    this.response = [];
   };
 
   @action
@@ -114,8 +116,7 @@ class Orders{
         this.searchCache.set(key, response)
       }
 
-      console.log(response)
-
+      this.response = response;
       this.orders = Object.keys(response).map(order => {
         let ticket = [];
         const line_items = response[order].line_items;

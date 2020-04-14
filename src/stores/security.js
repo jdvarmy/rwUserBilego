@@ -39,10 +39,10 @@ class Security{
     } finally {
       this.updatingUser = false;
     }
-  });
+  }).bind(this);
 
   @action
-  logout = function() {
+  logout = () => {
     try {
       this.updatingUser = true;
       tokenService.clear();

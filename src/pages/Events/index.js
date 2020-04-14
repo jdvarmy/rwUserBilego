@@ -21,6 +21,7 @@ const Orders = styled.div`
   margin: ${css.sizes.xs} 0;
   vertical-align: middle;
   text-align: center;
+  cursor: pointer;
 `;
 const StyledFilter = styled.div`
   padding: ${css.sizes.base};
@@ -73,6 +74,39 @@ class Events extends React.PureComponent{
     setFilter(selectedKeys);
   };
 
+  xlsxFileName = () => {
+    const { filters: {startDate, endDate} } = this.props.eventsStore,
+      format = 'DD/MM/YYYY';
+
+    return startDate && endDate
+      ? `События с ${startDate.format(format)} по ${endDate.format(format)}-bilego`
+      : !startDate && endDate
+        ? `События по ${endDate.format(format)}-bilego`
+        : startDate && !endDate
+          ? `События с ${startDate.format(format)}-bilego`
+          : `События с ${moment().format(format)}-bilego`
+  };
+  xlsxFileData = () => {
+    const { response } = this.props.eventsStore;
+
+    return response.map(event => {
+      return {
+        'ID события': event.id,
+        'Название': event.title,
+        'Сумма всех заказов': event.total_cur,
+        'Кол-во всех заказов': event.total_quantity,
+        'Сумма выполненых заказов': event.total_cur_completed,
+        'Кол-во выполненых заказов': event.total_quantity_completed,
+        'Сумма возмещения': 0,
+        'Комиссия': 0,
+        'Место': event.item_title,
+        'Дата': event.date2,
+        'Время': event.time,
+        'Возраст': event.age,
+      }
+    });
+  };
+
   render() {
     const { eventsStore:{ filters, events, isLoading, clearFilters } } = this.props;
     const f = 'DD.MM.YYYY';
@@ -116,9 +150,6 @@ class Events extends React.PureComponent{
         filterIcon: filtered => <SearchOutlined style={{ color: this.props.eventsStore.filters.events ? css.colors.electricRed : undefined }} />,
         onFilterDropdownVisibleChange: visible => {visible && setTimeout(() => this.searchInput.select())},
       },
-
-
-
       {
         title: <Flex>
           <div>
@@ -207,7 +238,80 @@ class Events extends React.PureComponent{
         title: 'Отчеты',
         key: 'orders',
         width: '5%',
-        render: () => <Orders onClick={() => {}}><SolutionOutlined /></Orders>
+        render: (data) => {
+          const { ordersInfo } = data;
+          let csvData = [];
+
+          Object.keys(ordersInfo).map( key =>{
+            const items = ordersInfo[key].line_items,
+              order = {
+                id: ordersInfo[key].id,
+                orderKey: ordersInfo[key].order_key,
+                status: ordersInfo[key].status,
+                date: ordersInfo[key].date,
+                customerEmail: ordersInfo[key].billing_address.email,
+                customerIp: ordersInfo[key].customer_ip,
+                totalOrderCur: ordersInfo[key].total_cur,
+                totalOrderQua: ordersInfo[key].total_quantity,
+                currency: ordersInfo[key].currency,
+                eventTitle: ordersInfo[key].event.title
+              };
+
+            items.map(el => {
+              const { attendees } = el,
+                ticket = {
+                  name: el.name,
+                  price: el.price,
+                  quantity: el.quantity,
+                  total: el.total
+                };
+
+              attendees && attendees.length > 0
+              ? attendees.map(a => {
+                  csvData.push({
+                    'ID заказа': order.id,
+                    'Дата покупки': order.date,
+                    'Статус': order.status,
+                    'Сумма заказа': order.totalOrderCur,
+                    'Валюта': order.currency,
+                    'Кол-во билетов в заказе': order.totalOrderQua,
+
+                    'Событие': order.eventTitle,
+                    'ID билета': a.ticket_id,
+                    'Билет': ticket.name,
+                    'Цена': ticket.price,
+                    'Количество': 1,
+                    'Сумма': ticket.price,
+                    'Код безопасности': a.security,
+                    'Покупатель': order.customerEmail,
+                    'IP покупателя': order.customerIp,
+                    'Check in': 'no', //a.check_in, todo: нужно программировать
+                  });
+                })
+                : csvData.push({
+                  'ID заказа': order.id,
+                  'Дата покупки': order.date,
+                  'Статус': order.status,
+                  'Сумма заказа': order.totalOrderCur,
+                  'Валюта': order.currency,
+                  'Кол-во билетов в заказе': order.totalOrderQua,
+
+                  'Событие': order.eventTitle,
+                  'ID билета': '',
+                  'Билет': ticket.name,
+                  'Цена': ticket.price,
+                  'Количество': ticket.quantity,
+                  'Сумма': ticket.total,
+                  'Код безопасности': '',
+                  'Покупатель': order.customerEmail,
+                  'IP покупателя': order.customerIp,
+                  'Check in': 'no',
+                });
+            });
+          } );
+
+          return <Orders onClick={() => ExportCSV(csvData, `Отчет по билетам ${data.event} bilego`)}><SolutionOutlined /></Orders>
+        }
       }
     ];
 
@@ -219,7 +323,7 @@ class Events extends React.PureComponent{
           subTitle="просмотр ваших событий"
           extra={[
             <Button key="2" onClick={clearFilters}>Очистить фильтры</Button>,
-            <Button key="1" type="primary" onClick={(e) => ExportCSV(events, 'Events')}>Скачать отчет</Button>
+            <Button key="1" type="primary" onClick={() => ExportCSV(this.xlsxFileData(), this.xlsxFileName())}>Скачать отчет</Button>
           ]}
         />
         <Table

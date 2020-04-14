@@ -19,6 +19,7 @@ import { round } from '../../components/functions';
 import Tickets from '../../components/Table/Tickets';
 import { SearchOutlined, FilterOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
+import { ExportCSV } from '../../components/ExportCSV';
 import moment from 'moment';
 import locale from 'antd/es/date-picker/locale/ru_RU';
 
@@ -113,6 +114,93 @@ class Orders extends React.PureComponent{
     this.time = setTimeout(function(){
       setFilter(selectedKeys);
     }, 100);
+  };
+
+  xlsxFileName = () => {
+    const { filters: {startDate, endDate} } = this.props.ordersStore,
+      format = 'DD/MM/YYYY';
+
+    return startDate && endDate
+      ? `Заказы с ${startDate.format(format)} по ${endDate.format(format)}-bilego`
+      : !startDate && endDate
+        ? `Заказы по ${endDate.format(format)}-bilego`
+        : startDate && !endDate
+          ? `Заказы с ${startDate.format(format)}-bilego`
+          : `Заказы bilego`
+  };
+  xlsxFileData = () => {
+    const { response } = this.props.ordersStore;
+    let csvData = [];
+
+    Object.keys(response).map( key =>{
+      const items = response[key].line_items,
+        order = {
+          id: response[key].id,
+          orderKey: response[key].order_key,
+          status: response[key].status,
+          date: response[key].date,
+          customerEmail: response[key].billing_address.email,
+          customerIp: response[key].customer_ip,
+          totalOrderCur: response[key].total_cur,
+          totalOrderQua: response[key].total_quantity,
+          currency: response[key].currency,
+          eventTitle: response[key].event.title
+        };
+
+      items.map(el => {
+        const { attendees } = el,
+          ticket = {
+            name: el.name,
+            price: el.price,
+            quantity: el.quantity,
+            total: el.total
+          };
+
+        attendees && attendees.length > 0
+          ? attendees.map(a => {
+            csvData.push({
+              'ID заказа': order.id,
+              'Дата покупки': order.date,
+              'Статус': order.status,
+              'Сумма заказа': order.totalOrderCur,
+              'Валюта': order.currency,
+              'Кол-во билетов в заказе': order.totalOrderQua,
+
+              'Событие': order.eventTitle,
+              'ID билета': a.ticket_id,
+              'Билет': ticket.name,
+              'Цена': ticket.price,
+              'Количество': 1,
+              'Сумма': ticket.price,
+              'Код безопасности': a.security,
+              'Покупатель': order.customerEmail,
+              'IP покупателя': order.customerIp,
+              'Check in': 'no', //a.check_in, todo: нужно программировать
+            });
+          })
+          : csvData.push({
+            'ID заказа': order.id,
+            'Дата покупки': order.date,
+            'Статус': order.status,
+            'Сумма заказа': order.totalOrderCur,
+            'Валюта': order.currency,
+            'Кол-во билетов в заказе': order.totalOrderQua,
+
+            'Событие': order.eventTitle,
+            'ID билета': '',
+            'Билет': ticket.name,
+            'Цена': ticket.price,
+            'Количество': ticket.quantity,
+            'Сумма': ticket.total,
+            'Код безопасности': '',
+            'Покупатель': order.customerEmail,
+            'IP покупателя': order.customerIp,
+            'Check in': 'no',
+          });
+      });
+    } );
+
+    return csvData;
   };
 
   render() {
@@ -367,7 +455,7 @@ class Orders extends React.PureComponent{
           subTitle="просмотр заказов ваших клиентов"
           extra={[
             <Button key="2" onClick={clearFilters}>Очистить фильтры</Button>,
-            <Button key="1" type="primary" disabled>Скачать отчет</Button>,
+            <Button key="1" type="primary" onClick={() => ExportCSV(this.xlsxFileData(), this.xlsxFileName())}>Скачать отчет</Button>,
           ]}
         />
         <Table
