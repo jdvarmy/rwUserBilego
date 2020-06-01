@@ -1,9 +1,10 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 import styled from 'styled-components';
 
 import { round } from '../../components/functions';
-import {Table, Input, DatePicker, Button, Typography, PageHeader} from 'antd';
+import { Table, Input, DatePicker, Button, Typography, PageHeader, Menu, Dropdown, Modal } from 'antd';
 import { OrderDetails } from '../../components/Table/Order';
 import { SolutionOutlined, SearchOutlined, FilterOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
@@ -16,6 +17,10 @@ import 'antd/es/table/style/css';
 import 'antd/es/input/style/css';
 import 'antd/es/button/style/css';
 import 'antd/es/date-picker/style/css';
+import 'antd/es/menu/style/css';
+import 'antd/es/dropdown/style/css';
+import 'antd/es/modal/style/css';
+import 'antd/es/typography/style/css';
 
 const Orders = styled.div`
   margin: ${css.sizes.xs} 0;
@@ -48,8 +53,6 @@ const Span = styled.span`
   color: ${css.colors.grey};
   font-weight: 100;
 `;
-const Wrapper = styled.div`
-`;
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
@@ -62,6 +65,15 @@ class Events extends React.PureComponent{
 
     initState();
     getEventsOfUser();
+  };
+
+  @observable modal = {
+    title: null,
+    link: null,
+    visible: null,
+  };
+  @action setModal = (val) => {
+    this.modal = val;
   };
 
   handleReset = clearFilters => {
@@ -235,7 +247,7 @@ class Events extends React.PureComponent{
         ],
       },
       {
-        title: 'Отчеты',
+        title: 'Управление',
         key: 'orders',
         width: '5%',
         render: (data) => {
@@ -310,13 +322,26 @@ class Events extends React.PureComponent{
             });
           } );
 
-          return <Orders onClick={() => ExportCSV(csvData, `Отчет по билетам ${data.event} bilego`)}><SolutionOutlined /></Orders>
+          console.log(data)
+          const menu = (
+            <Menu>
+              <Menu.Item key="1" onClick={() => ExportCSV(csvData, `Отчет по билетам ${data.event} bilego`)}>
+                Скачать отчет по билетам
+              </Menu.Item>
+              <Menu.Item key="2" onClick={() => this.setModal({title: `Iframe для продажи билетов события ${data.event}`, link: data.ticketLink, visible: true})}>Сформировать Iframe билетов</Menu.Item>
+            </Menu>
+          );
+          return (
+            <Dropdown overlay={menu} trigger={['click']}>
+              <Orders><SolutionOutlined /></Orders>
+            </Dropdown>
+          )
         }
       }
     ];
 
     return (
-      <Wrapper>
+      <div>
         <PageHeader
           title="Отчет по событиям"
           className="site-page-header"
@@ -365,10 +390,10 @@ class Events extends React.PureComponent{
                     <Text>x{tickets}</Text>
                   </th>
                   <th>
-                    <Text type="danger">{complitedMoney}p</Text>
+                    <Text>{complitedMoney}p</Text>
                   </th>
                   <th>
-                    <Text type="danger">{money}p</Text>
+                    <Text>{money}p</Text>
                   </th>
                   <td/>
                 </tr>
@@ -376,7 +401,16 @@ class Events extends React.PureComponent{
             );
           }}
         />
-      </Wrapper>
+        <Modal
+          title={this.modal.title}
+          visible={this.modal.visible}
+          footer={null}
+          onCancel={() => this.setModal({title: null, link: null, visible: null})}
+        >
+          <Typography>Скопируйте ссылку ниже и вставьте в любое место Вашего сайта:</Typography>
+          <Input.TextArea style={{height: '90px'}} value={'<iframe src="' + this.modal.link + '" width="100%" height="645px"></iframe>'}></Input.TextArea>
+        </Modal>
+      </div>
     )
   }
 }

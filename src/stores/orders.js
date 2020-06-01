@@ -128,6 +128,7 @@ class Orders{
               key: t.ticket_id,
               title: name,
               price: price,
+              check_in: t.check_in,
               security: t.security
             })
           })

@@ -115,6 +115,7 @@ class Events{
           totalCurCompleted: event.total_cur_completed,
           totalQuantityCompleted: event.total_quantity_completed,
           ordersInfo: event.orders_info,
+          ticketLink: event.ticket_link,
         }
       });
     } catch (e) {
