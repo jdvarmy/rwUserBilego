@@ -297,7 +297,7 @@ class Events extends React.PureComponent{
                     'Код безопасности': a.security,
                     'Покупатель': order.customerEmail,
                     'IP покупателя': order.customerIp,
-                    'Check in': 'no', //a.check_in, todo: нужно программировать
+                    'Check in': a.check_in ? 'yes' : 'no'
                   });
                 })
                 : csvData.push({
@@ -322,7 +322,6 @@ class Events extends React.PureComponent{
             });
           } );
 
-          console.log(data)
           const menu = (
             <Menu>
               <Menu.Item key="1" onClick={() => ExportCSV(csvData, `Отчет по билетам ${data.event} bilego`)}>
