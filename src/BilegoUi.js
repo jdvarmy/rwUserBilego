@@ -5,6 +5,7 @@ import { ThemeProvider } from 'styled-components';
 import {Router, Route, Switch} from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { Layout } from 'antd';
+import { isMobile } from 'mobile-device-detect';
 
 import * as stores from './stores';
 import routes from './routes';
@@ -52,7 +53,7 @@ class BilegoUiRouter extends React.Component {
     return (
       <Wrapper>
         <Router history={history} path={path}>
-          {(user && token) && <Sider />}
+          {(user && token && !isMobile) && <Sider />}
           <Layout className="site-layout">
             {(user && token) && <Header />}
             <Layout.Content>

@@ -1,8 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Layout } from 'antd';
+import { isMobile } from 'mobile-device-detect';
+
 
 const CustomFooter = styled(Layout.Footer)`
+  ${isMobile && 'display: none;'}
   text-align: right;
   position: fixed;
   width: 100%;
@@ -11,7 +14,7 @@ const CustomFooter = styled(Layout.Footer)`
   &.ant-layout-footer {
     padding: 0;
     color: rgba(0, 0, 0, 0.55);
-    font-size: 12px;
+    font-size: 10px;
     background: none;
   }
 `;

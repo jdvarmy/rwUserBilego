@@ -30506,3 +30506,13 @@ a:hover,
 
 
 /*# sourceMappingURL=pixel.css.map */
+
+.ant-table{
+  color: black!important;
+}
+.ant-table-wrapper{
+  overflow: scroll;
+}
+.ant-table.ant-table-bordered thead > tr > th, .ant-table.ant-table-bordered tbody > tr > td, .ant-table.ant-table-bordered tfoot > tr > th, .ant-table.ant-table-bordered tfoot > tr > td{
+  background-color: white;
+}
